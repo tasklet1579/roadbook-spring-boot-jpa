@@ -1,7 +1,10 @@
 package edu.book.roadbookspringbootjpa.repository;
 
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import edu.book.roadbookspringbootjpa.constant.ItemSellStatus;
 import edu.book.roadbookspringbootjpa.entity.Item;
+import edu.book.roadbookspringbootjpa.entity.QItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +110,24 @@ class ItemRepositoryTest {
     public void findByItemDetailByNative() {
         this.createItemList();
         List<Item> itemList = itemRepository.findByItemDetailByNative("테스트 상품 상세 설명");
+        for (Item item : itemList) {
+            System.out.println(item.toString());
+        }
+    }
+
+    @Test
+    @DisplayName("Querydsl 조회 테스트1")
+    public void queryDslTest() {
+        this.createItemList();
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        QItem qItem = QItem.item;
+        JPAQuery<Item> query = queryFactory.selectFrom(qItem)
+                                           .where(qItem.itemSellStatus.eq(ItemSellStatus.SELL))
+                                           .where(qItem.itemDetail.like("%" + "테스트 상품 상세 설명" + "%"))
+                                           .orderBy(qItem.price.desc());
+
+        List<Item> itemList = query.fetch();
+
         for (Item item : itemList) {
             System.out.println(item.toString());
         }
