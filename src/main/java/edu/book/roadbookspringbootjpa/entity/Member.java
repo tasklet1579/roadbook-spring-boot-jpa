@@ -43,4 +43,15 @@ public class Member {
         member.setRole(Role.USER);
         return member;
     }
+
+    public static Member createAdmin(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
+        Member member = new Member();
+        member.setName(memberFormDto.getName());
+        member.setEmail(memberFormDto.getEmail());
+        member.setAddress(memberFormDto.getEmail());
+        String password = passwordEncoder.encode((memberFormDto.getPassword()));
+        member.setPassword(password);
+        member.setRole(Role.ADMIN);
+        return member;
+    }
 }
