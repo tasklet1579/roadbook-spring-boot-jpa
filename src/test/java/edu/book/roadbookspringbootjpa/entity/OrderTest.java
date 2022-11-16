@@ -4,6 +4,7 @@ import edu.book.roadbookspringbootjpa.constant.ItemSellStatus;
 import edu.book.roadbookspringbootjpa.constant.OrderStatus;
 import edu.book.roadbookspringbootjpa.repository.ItemRepository;
 import edu.book.roadbookspringbootjpa.repository.MemberRepository;
+import edu.book.roadbookspringbootjpa.repository.OrderItemRepository;
 import edu.book.roadbookspringbootjpa.repository.OrderRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class OrderTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -101,5 +105,22 @@ class OrderTest {
         Order order = this.createOrder();
         order.getOrderItems().remove(0);
         entityManager.flush();
+    }
+
+    @DisplayName("지연 로딩 테스트")
+    @Test
+    public void lazyLoadingTest() {
+        Order order = this.createOrder();
+        Long orderItemId = order.getOrderItems().get(0).getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        OrderItem orderItem = orderItemRepository.findById(orderItemId)
+                                                 .orElseThrow(EntityNotFoundException::new);
+
+        System.out.println("Order class: " + orderItem.getOrder().getClass());
+        System.out.println("===");
+        orderItem.getOrder().getOrderDate();
+        System.out.println("===");
     }
 }
