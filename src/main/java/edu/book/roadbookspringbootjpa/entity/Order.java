@@ -28,7 +28,13 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    // MERGE means something complex that approximates "save" but is more like
+    // "push this detached entity back into managed status and save its state changes";
+    // the cascading means that all associated entities get pushed back the same way,
+    // and the managed-entity handle you get back from .merge() has all managed entities associated with it.
+    // REFRESH means "pull any state changes from the database into my representation".
+    // Cascading this is simple; it means that all associated entities are refreshed.
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     private LocalDateTime regTime;
