@@ -5,8 +5,11 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import edu.book.roadbookspringbootjpa.constant.ItemSellStatus;
 import edu.book.roadbookspringbootjpa.dto.ItemSearchDto;
+import edu.book.roadbookspringbootjpa.dto.MainItemDto;
+import edu.book.roadbookspringbootjpa.dto.QMainItemDto;
 import edu.book.roadbookspringbootjpa.entity.Item;
 import edu.book.roadbookspringbootjpa.entity.QItem;
+import edu.book.roadbookspringbootjpa.entity.QItemImg;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +19,7 @@ import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ItemRepositoryCustomImpl implements ItemRepositoryCustom { 
+public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     private JPAQueryFactory queryFactory; // 동적으로 쿼리를 생성하기 위해서
 
     public ItemRepositoryCustomImpl(EntityManager entityManager) {
@@ -67,8 +70,37 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                                                  .offset(pageable.getOffset())
                                                  .limit(pageable.getPageSize())
                                                  .fetchResults();
-        
+
         List<Item> content = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    private BooleanExpression itemNmLike(String searchQuery) {
+        return StringUtils.isEmpty(searchQuery) ? null :
+                QItem.item.itemNm.like("%" + searchQuery + "%");
+    }
+
+    @Override
+    public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
+        QItem item = QItem.item;
+        QItemImg itemImg = QItemImg.itemImg;
+
+        QueryResults<MainItemDto> results = queryFactory.select(new QMainItemDto(itemImg.id, // Dto 변환 과정 생략
+                                                                item.itemNm,
+                                                                item.itemDetail,
+                                                                itemImg.imgUrl,
+                                                                item.price))
+                                                        .from(itemImg)
+                                                        .join(itemImg.item, item)
+                                                        .where(itemImg.repimgYn.eq("Y"))
+                                                        .where(itemNmLike(itemSearchDto.getSearchQuery()))
+                                                        .orderBy(item.id.desc())
+                                                        .offset(pageable.getOffset())
+                                                        .limit(pageable.getPageSize())
+                                                        .fetchResults();
+
+        List<MainItemDto> content = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
     }

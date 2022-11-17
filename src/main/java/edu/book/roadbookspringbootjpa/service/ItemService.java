@@ -3,6 +3,7 @@ package edu.book.roadbookspringbootjpa.service;
 import edu.book.roadbookspringbootjpa.dto.ItemFormDto;
 import edu.book.roadbookspringbootjpa.dto.ItemImgDto;
 import edu.book.roadbookspringbootjpa.dto.ItemSearchDto;
+import edu.book.roadbookspringbootjpa.dto.MainItemDto;
 import edu.book.roadbookspringbootjpa.entity.Item;
 import edu.book.roadbookspringbootjpa.entity.ItemImg;
 import edu.book.roadbookspringbootjpa.repository.ItemImgRepository;
@@ -79,5 +80,10 @@ public class ItemService {
     @Transactional(readOnly = true)
     public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
         return itemRepository.getAdminItemPage(itemSearchDto, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
+        return itemRepository.getMainItemPage(itemSearchDto, pageable);
     }
 }
