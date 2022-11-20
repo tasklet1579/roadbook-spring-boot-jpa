@@ -86,7 +86,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         QItem item = QItem.item;
         QItemImg itemImg = QItemImg.itemImg;
 
-        QueryResults<MainItemDto> results = queryFactory.select(new QMainItemDto(itemImg.id, // Dto 변환 과정 생략
+        QueryResults<MainItemDto> results = queryFactory.select(new QMainItemDto(item.id, // Dto 변환 과정 생략
                                                                 item.itemNm,
                                                                 item.itemDetail,
                                                                 itemImg.imgUrl,

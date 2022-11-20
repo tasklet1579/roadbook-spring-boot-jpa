@@ -35,12 +35,13 @@ public class ItemController {
 
     @PostMapping(value = "/admin/item/new")
     public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, Model model,
-                          @RequestParam("itemImgFile")List<MultipartFile> itemImgFileList) {
+                          @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) {
         if (bindingResult.hasErrors()) {
             return "item/itemForm";
         }
 
-        if (itemImgFileList.get(0).isEmpty() && itemFormDto.getId() == null) {
+        if (itemImgFileList.get(0)
+                           .isEmpty() && itemFormDto.getId() == null) {
             model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수 입력 값입니다.");
             return "item/itemForm";
         }
@@ -76,7 +77,8 @@ public class ItemController {
             return "item/itemForm";
         }
 
-        if (itemImgFileList.get(0).isEmpty() && itemFormDto.getId() == null) {
+        if (itemImgFileList.get(0)
+                           .isEmpty() && itemFormDto.getId() == null) {
             model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수 입력 값입니다.");
             return "item/itemForm";
         }
@@ -99,5 +101,12 @@ public class ItemController {
         model.addAttribute("itemSearchDto", itemSearchDto);
         model.addAttribute("maxPage", 5);
         return "item/itemMng";
+    }
+
+    @GetMapping(value = "/item/{itemId}")
+    public String itemDtl(Model model, @PathVariable("itemId") Long itemId) {
+        ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
+        model.addAttribute("item", itemFormDto);
+        return "item/itemDtl";
     }
 }
