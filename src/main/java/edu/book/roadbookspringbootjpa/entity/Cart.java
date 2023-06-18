@@ -20,4 +20,10 @@ public class Cart {
     @OneToOne(fetch = FetchType.EAGER) // 즉시 로딩이 기본 Fetch 전략으로 설정되어 있음
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public static Cart createCart(Member member) {
+        Cart cart = new Cart();
+        cart.setMember(member);
+        return cart;
+    }
 }
